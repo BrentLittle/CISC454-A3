@@ -51,37 +51,78 @@ vec3 Spline::eval( float t, evalType type )
 
 {
   // YOUR CODE HERE
-  
-  
+  int ti = floor(t);
+  float u = t - ti;
+
   // for t outside [0,data.size()), move t into range
-
-
+  t = fmod( t, data.size() );
+  
   // Find the 4 control points for this t, and the u value in [0,1] for this interval.
-
+  // given ti calculate the index of the control point in the range of data.size()-1
+  // if ti is out of the range of indicies in data wrap it back in
+  //    negative will wrap to the upper end of indicies
+  //    positive will wrap to the lower end of indicies
+  vec3 cp1 = data[ ( (( ti - 1 ) % data.size()) + data.size() ) % (data.size()) ];
+  vec3 cp2 = data[ ( ((   ti   ) % data.size()) + data.size() ) % (data.size()) ];
+  vec3 cp3 = data[ ( (( ti + 1 ) % data.size()) + data.size() ) % (data.size()) ];
+  vec3 cp4 = data[ ( (( ti + 2 ) % data.size()) + data.size() ) % (data.size()) ];
+  
+  // store each x,y,z attribute of each control point in a 4x3 array
+  float v[4][3] = { 
+                  { cp1.x, cp1.y, cp1.z },
+                  { cp2.x, cp2.y, cp2.z },
+                  { cp3.x, cp3.y, cp3.z },
+                  { cp4.x, cp4.y, cp4.z } 
+                  };
 
   // Compute Mv
+  // Perform a matrix multiplication with M[currSpline] on the left and v on the right.
+  float mv[4][3];
 
+  // initiamize the mv array with some base values
+  for(int i = 0; i < 4; i++) {
+    for(int j = 0; j < 3; j++){
+        mv[i][j] = 0.0f;
+  }}
 
-  // If type == VALUE, return the value = T (Mv)
+  // perform the matrix multiplication between the COB matrix and our control point matrix
+  for(int i = 0; i < 4; i++){
+    for(int j = 0; j < 3; j++){
+      for(int k = 0; k < 4; k++){
+        mv[i][j] += M[currSpline][i][k] * v[k][j];
+  }}}
 
-
-  // If type == TANGENT, return the value T' (Mv)
-
+  if(type == VALUE)
+  {
+    // If type == VALUE, return the value = T(Mv)
+    // Calculate the output of the spline for each of x,y,z and return these as a vec3.
+    return vec3 ( (mv[0][0] * pow( u , 3 )) + (mv[1][0] * pow( u , 2 )) + (mv[2][0] * u) + (mv[3][0]),
+                  (mv[0][1] * pow( u , 3 )) + (mv[1][1] * pow( u , 2 )) + (mv[2][1] * u) + (mv[3][1]),
+                  (mv[0][2] * pow( u , 3 )) + (mv[1][2] * pow( u , 2 )) + (mv[2][2] * u) + (mv[3][2]));
+  }
+  else if (type == TANGENT){
+    // If type == TANGENT, return the value T'(Mv)
+    // Calculate the derivative output of the spline for each of x,y,z and return these as a vec3.
+    return vec3 ( (3 * mv[0][0] * pow( u , 2 )) + (2 * mv[1][0] * pow( u , 1 )) + (mv[2][0]),
+                  (3 * mv[0][1] * pow( u , 2 )) + (2 * mv[1][1] * pow( u , 1 )) + (mv[2][1]),
+                  (3 * mv[0][2] * pow( u , 2 )) + (2 * mv[1][2] * pow( u , 1 )) + (mv[2][2]));
+  }
   return vec3(0,0,0);
 }
 
 
-// Find a local coordinate system at t.  Return the axes x,y,z.  y
-// should point as much up as possible and z should point in the
-// direction of increasing position on the curve.
-
-
+// Find a local coordinate system at t.  
+// Return the axes x,y,z.  
+// y should point as much up as possible 
+// and z should point in the direction of increasing position on the curve.
 void Spline::findLocalSystem( float t, vec3 &o, vec3 &x, vec3 &y, vec3 &z )
-
 {
-#if 0
-
-  // YOUR CODE HERE
+#if 1
+// YOUR CODE HERE
+  o = eval(  t , VALUE    );
+  z = eval(  t , TANGENT  ).normalize();
+  x = ( z ^ vec3(0, 0, 1) ).normalize();
+  y = (       x ^ z       ).normalize();
 
 #else
   
@@ -140,8 +181,8 @@ void Spline::draw( mat4 &MV, mat4 &MVP, vec3 lightDir, bool drawIntervals )
 {
   // Draw the spline
   
-  vec3 *points = new vec3[ data.size()*DIVS_PER_SEG + 1 ];
-  vec3 *colours = new vec3[ data.size()*DIVS_PER_SEG + 1 ];
+  vec3 *points = new vec3[ data.size() * DIVS_PER_SEG + 1 ];
+  vec3 *colours = new vec3[ data.size() * DIVS_PER_SEG + 1 ];
 
   int i = 0;
   for (float t=0; t<data.size(); t+=1/(float)DIVS_PER_SEG) {

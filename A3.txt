@@ -7,7 +7,7 @@ On Linux and MacOS, run the program as
 
   ./roller data/coaster1.txt
 
-On Windows Visual Studio, include "data\coaster1.txt" in the Debugging
+On Windows Visual Studio, include "data\coaster1.txt" in the Debuggingmake
 command-line arguments.
   
 After the program starts, press '?' in the window to print a list of
@@ -15,30 +15,36 @@ available commands.
 
 Do the following:
 
+DONE
 1. Implement Spline::eval() to evaluate the spline at a given
    parameter value.  Note that the function can return the value or
    the derivative. [6 marks]
 
+DONE
 2. Implement Spline::findLocalSystem() to return a local coordinate
    system at a given parameter value.  This coordinate system is quite
    important: it is used to draw the track and to position the train
    on the track.  Use the derivative from Spline::eval(). [2 marks]
 
+DONE
 3. Implement Train::draw() to draw at least one train car at the
    current position.  Start with a simple box, then improve it.  It's
    easiest if you create a Cube class (like the Sphere and Cylinder)
    and then instantiate a scaled cube for the box.  [4 marks]
 
+DONE
 4. Implement Train::advance() to move the train along the track.  This
    function adjusts 'pos' and should vary the speed ACCORDING TO SOME
    PHYSICAL MODEL.  Start with a constant speed, then add the
    physics. [4 marks]
+
 
 5. Implement Scene::drawAllTrack() to draw tracks in place of the
    spline curve.  Choose your own way of drawing the tracks.  Start
    with a very simple smooth surface, then improve it to have two
    rails.  Then add ties between the rails.  [6 marks]
 
+DONE
 6. Create a novel roller coaster scene.  You should use a different
    terrain than the one provided.  You may use heightfields and
    matching textures from other sources.  Show an interesting
@@ -51,7 +57,7 @@ Do the following:
        independently, but remain connected.  Worth up to 3 marks if
        done well, 1 mark if done without much novelty.
 
-     - Have a mode in which the viewpoint moves with the train.  Worth
+     - Have a mode in which the viewpoint moves with the train. Worth
        up to 3 marks.
 
      - Add support structure under the tracks.  Worth up to 4 marks if

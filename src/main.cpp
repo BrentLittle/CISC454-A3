@@ -17,6 +17,12 @@ int windowHeight = 600;
 Scene *scene;
 
 Sphere   *sphere;
+Cube     *cube;
+Cube     *car1;
+Cube     *car2;
+Cube     *car3;
+Cube     *car4;
+Cube     *car5;
 Cylinder *cylinder;
 Axes     *axes;
 Segs     *segs;
@@ -111,10 +117,16 @@ int main( int argc, char **argv )
 
   // Some basic objects
 
-  sphere   = new Sphere(4);
-  cylinder = new Cylinder(200);
-  axes     = new Axes();
-  segs     = new Segs();
+  sphere    = new Sphere(4);
+  cube      = new Cube();
+  car1      = new Cube();
+  car2      = new Cube();
+  car3      = new Cube();
+  car4      = new Cube();
+  car5      = new Cube();
+  cylinder  = new Cylinder(200);
+  axes      = new Axes();
+  segs      = new Segs();
   
   // Main loop
 

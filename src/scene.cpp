@@ -575,13 +575,110 @@ bool Scene::write()
 
 // Draw the track
 
-
 #define DIST_BETWEEN_TIES 15.0
 #define NUM_SEGMENTS_BETWEEN_TIES 4
-
 
 void Scene::drawAllTrack( mat4 &MV, mat4 &MVP, vec3 lightDir )
 
 {
-  // YOUR CODE HERE
+  // variables to edit how the track looks
+  float trackDistFromCenter = 1.0;
+  float trackRailWidth = .4;
+  float tieWidth = .3;
+  float tieLength = 2;
+  float DivsPerSeg = 20;
+  
+  vec3 splineColour = vec3(.8,.8,.8);
+  vec3 tieColour = vec3(.54,.27,.07);
+  
+  // Helper Variables
+  vec3 o1, x1, y1, z1;
+  vec3 o2, x2, y2, z2;
+  int size = (spline->data.size()) * DivsPerSeg;
+
+  // Array to hold points and colours for both Left and Right tracks
+  vec3 *leftTrackPoints   = new vec3[ size * 8 ];
+  vec3 *leftTrackColours  = new vec3[ size * 8 ];
+  vec3 *rightTrackPoints  = new vec3[ size * 8 ];
+  vec3 *rightTrackColours = new vec3[ size * 8 ];
+  vec3 *tiePoints         = new vec3[ 6 ];
+  vec3 *tieColours        = new vec3[ 6 ];
+
+  // keep track of location in point and colour indicies
+  int i = 0;
+  int j = 0;
+  
+  for (float t = 0; t < spline->data.size(); t += 1/DivsPerSeg ) {
+    // obtain the local system at our current t value
+    spline->findLocalSystem( t, o1, x1, y1, z1 );
+    spline->findLocalSystem( t+(1/DivsPerSeg), o2, x2, y2, z2 );
+    
+    // x direction of the local system of spline
+    vec3 t1Xdirec = x1.normalize();
+    vec3 t2Xdirec = x2.normalize();
+    
+    // Add points to the lefttrack and righttrack arrays arrays
+    leftTrackPoints[i] = spline->value( t ) - ( trackDistFromCenter * t1Xdirec );
+    leftTrackColours[i] = splineColour;
+    rightTrackPoints[i] = spline->value( t ) + ( trackDistFromCenter * t1Xdirec );
+    rightTrackColours[i] = splineColour;
+    i++;
+    
+    leftTrackPoints[i] = spline->value( t ) - ( trackDistFromCenter * t1Xdirec ) - ( trackRailWidth * t1Xdirec );
+    leftTrackColours[i] = splineColour;
+    rightTrackPoints[i] = spline->value( t ) + ( trackDistFromCenter * t1Xdirec ) + ( trackRailWidth * t1Xdirec );
+    rightTrackColours[i] = splineColour;
+    i++;
+    
+    leftTrackPoints[i] = spline->value( t+(1/DivsPerSeg) ) - ( trackDistFromCenter * t2Xdirec );
+    leftTrackColours[i] = splineColour;
+    rightTrackPoints[i] = spline->value( t+(1/DivsPerSeg) ) + ( trackDistFromCenter * t2Xdirec );
+    rightTrackColours[i] = splineColour;
+    i++;
+    
+    leftTrackPoints[i] = spline->value( t+(1/DivsPerSeg) ) - ( trackDistFromCenter * t2Xdirec );
+    leftTrackColours[i] = splineColour;
+    rightTrackPoints[i] = spline->value( t+(1/DivsPerSeg) ) + ( trackDistFromCenter * t2Xdirec );
+    rightTrackColours[i] = splineColour;
+    i++;
+    
+    leftTrackPoints[i] = spline->value( t+(1/DivsPerSeg) ) - ( trackDistFromCenter * t2Xdirec ) - ( trackRailWidth * t2Xdirec );
+    leftTrackColours[i] = splineColour;
+    rightTrackPoints[i] = spline->value( t+(1/DivsPerSeg) ) + ( trackDistFromCenter * t2Xdirec ) + ( trackRailWidth * t2Xdirec );
+    rightTrackColours[i] = splineColour;
+    i++;
+    
+    leftTrackPoints[i] = spline->value( t ) - ( trackDistFromCenter * t2Xdirec ) - ( trackRailWidth * t1Xdirec );
+    leftTrackColours[i] = splineColour;
+    rightTrackPoints[i] = spline->value( t ) + ( trackDistFromCenter * t2Xdirec ) + ( trackRailWidth * t1Xdirec );
+    rightTrackColours[i] = splineColour;
+    i++;
+    
+    // draw the tie on the track
+    if ((j % NUM_SEGMENTS_BETWEEN_TIES) == 0){
+      vec3 zDirec = z1.normalize();
+      vec3 xDirec = x1.normalize();
+      vec3 yDirec = y1.normalize();
+
+      tiePoints[0] = spline->value( t ) + ( tieLength * xDirec ) + (tieWidth * zDirec) - (.01 * yDirec);
+      tiePoints[1] = spline->value( t ) - ( tieLength * xDirec ) + (tieWidth * zDirec) - (.01 * yDirec);
+      tiePoints[2] = spline->value( t ) - ( tieLength * xDirec ) - (tieWidth * zDirec) - (.01 * yDirec);
+      
+      tiePoints[3] = spline->value( t ) + ( tieLength * xDirec ) + (tieWidth * zDirec) - (.01 * yDirec);
+      tiePoints[4] = spline->value( t ) + ( tieLength * xDirec ) - (tieWidth * zDirec) - (.01 * yDirec);
+      tiePoints[5] = spline->value( t ) - ( tieLength * xDirec ) - (tieWidth * zDirec) - (.01 * yDirec);
+
+      for(int j=0; j<6; j++)
+      {
+        tieColours[j] = tieColour;
+      }
+      segs->drawSegs( GL_TRIANGLES, tiePoints, tieColours, 6, MV, MVP, lightDir );
+    }
+    j++;
+  }
+
+  // draw our tracks on the poles
+  segs->drawSegs( GL_TRIANGLES, leftTrackPoints, leftTrackColours, i, MV, MVP, lightDir );
+  segs->drawSegs( GL_TRIANGLES, rightTrackPoints, rightTrackColours, i, MV, MVP, lightDir );
+
 }

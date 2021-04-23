@@ -18,7 +18,6 @@ class Train {
 
   float pos;                    // position on spline
   float speed;
-
   float mass;
 
  public:
@@ -26,7 +25,7 @@ class Train {
   Train( Spline *spl ) {
     spline = spl;
     pos = 0;
-    speed = 70;
+    speed = 40;
     mass = 1;
   }
   

@@ -5,7 +5,7 @@ vpath %.cpp ../src
 vpath %.c   ../src/glad/src
 vpath %.o   ../obj
 
-OBJS = main.o scene.o ctrlPoints.o train.o terrain.o spline.o arcball.o linalg.o font.o texture.o sphere.o cylinder.o drawSegs.o gpuProgram.o axes.o lodepng.o glad.o
+OBJS = main.o scene.o ctrlPoints.o train.o terrain.o spline.o arcball.o linalg.o font.o texture.o sphere.o cylinder.o drawSegs.o gpuProgram.o axes.o lodepng.o glad.o cube.o
 
 EXEC = roller
 
